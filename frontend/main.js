@@ -19,6 +19,20 @@ async function initApp() {
   const people = await getPeople();
   renderedPeople = new ListRenderer(people, "#people-grid-container", PeopleRenderer);
   renderedPeople.render();
+
+  const somePeople = await getSomePeople();
+  renderedPeople = new ListRenderer(somePeople, "#people-grid-container", PeopleRenderer);
+
+  createPagnationButtons();
+  document.querySelector("#page1").addEventListener("click", () => {
+    showPage1;
+  });
+  // document.querySelector("#page2").addEventListener("click", () => {
+  //   renderedPeople.render();
+  // });
+  // document.querySelector("#page3").addEventListener("click", () => {
+  //   renderedPeople.render();
+  // });
 }
 
 async function getPeople() {
@@ -27,6 +41,13 @@ async function getPeople() {
   return people;
 }
 
+export async function getSomePeople() {
+  const response = await fetch(endpoint + "?page=2&limit=4");
+  const originalJson = await response.json();
+  const somePeople = originalJson.map((JsonObj) => {
+    return somePeople;
+  });
+}
 //EventListeners
 function globalListeners() {
   //Sorteringsfunktion
@@ -43,6 +64,26 @@ function globalListeners() {
       renderedPeople.sort(sortBy, sortDir);
     }
   });
+}
+
+function createPagnationButtons() {
+  const pageSize = 5;
+  const totalPeople = 250 / pageSize;
+  const container = document.querySelector("#pagination");
+  for (let p = 0; p < totalPeople; p++) {
+    const html = `<button id ="page${p + 1}">{p+1} -${p + 1 + 5}</button>`;
+    container.insertAdjacentHTML("beforeend", html);
+
+    const button = container.lastElementChild;
+    button.addEventListener("click", (event) => {
+      event.preventDefault();
+    });
+  }
+}
+
+async function showPage1() {
+  const people = await endpoint.getSomePeople(1, 5);
+  PeopleRenderer.setList(people);
 }
 
 //Søgefunktion
